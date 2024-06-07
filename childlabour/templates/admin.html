@@ -12,6 +12,7 @@
             background-color: #f4f4f4;
         }
         .container {
+        
             background: #fff;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -49,6 +50,43 @@
             background-color: #2ecc71;
             color: white;
         }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+            text-align: center;
+        }
+        .modal-content h2 {
+            margin-top: 0;
+        }
+        .modal-content .modal-btn {
+            margin: 10px 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+        }
+        .modal-content .cancel-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .modal-content .confirm-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -77,12 +115,46 @@
                     <td>This is a description of the report.</td>
                     <td>
                         <button class="action-btn delete-btn">Delete</button>
-                        <button class="action-btn approve-btn">Approve</button>
+                        <button class="action-btn approve-btn" onclick="openModal()">Approve</button>
                     </td>
                 </tr>
                 <!-- Additional rows go here -->
             </tbody>
         </table>
     </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <h2>Confirmation</h2>
+            <p>Are you sure you want to approve it?</p>
+            <button class="modal-btn confirm-btn" onclick="confirmApproval()">Confirm</button>
+            <button class="modal-btn cancel-btn" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById("myModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+
+        {% comment %} function confirmApproval() {
+            // Implement the approval logic here
+            alert("Approved!");
+            closeModal();
+        } {% endcomment %}
+
+        // Close the modal if the user clicks anywhere outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById("myModal");
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
 </body>
 </html>
