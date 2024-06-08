@@ -6,7 +6,21 @@ from rest_framework.views import APIView
 import random
 from rest_framework.decorators import api_view
 
+def index(request):
+    if request.method == "POST":
+        if request.GET.get('action') == 'delete':
+            id = request.POST.get('del-id')
+            Complaint.objects.get(id=id).delete()
+            return redirect('home')
+        elif request.GET.get('action') == 'approve':
+            id = request.POST.get('del-id')
+            complaint_obj= Complaint.objects.get(id=id)
+            complaint_obj.admin_verified = True
+            complaint_obj.save()
+            return redirect('home')
 
+    complaint = Complaint.objects.filter(admin_verified=False )
+    return render(request, 'admin.html', context={'complaint':complaint})
 
 class ComplaintApi(APIView):
     permission_classes = []
@@ -35,7 +49,7 @@ class ComplaintApi(APIView):
                 'token': complaint.email_token,
             }, status=200)
         return Response({'posted':False,'error' : serializer.errors , 'message': 'Bad request here' }, status= 403,)
-        
+
 
 @api_view(['POST'])
 def email_verify_token(request):
@@ -61,6 +75,52 @@ def email_verify_token(request):
             'message': f'An unexpected error occurred,{e}'
         }, status=500)
         
+@api_view(['POST'])
+def delete_complain(request):
+    data = request.data
+    id = data.get('id')
+    email = data.get('email')
+    try:
+        complaint_obj = Complaint.objects.get(id=id, email=email)
+        complaint_obj.delete()
+        return Response({
+            'deleted': True,
+        }, status=200)
+    except Complaint.DoesNotExist:
+        return Response({
+            'deleted':False,
+            'message': 'Invalid ID or Email',
+        }, status=403)
+    except Exception as e:
+        return Response({
+            'deleted':False,
+            'message': f'An unexpected error occurred,{e}'
+        }, status=500)
+
+
+       
+@api_view(['POST'])
+def aprove_complain(request):
+    data = request.data
+    id = data.get('id')
+    email = data.get('email')
+    try:
+        complaint_obj = Complaint.objects.get(id=id,email = email)
+        complaint_obj.admin_verified = True
+        complaint_obj.save()
+        return Response({
+            'Aproved': True,
+        }, status=200)
+    except Complaint.DoesNotExist:
+        return Response({
+            'Aproved':False,
+            'message': 'Invalid ID',
+        }, status=403)
+    except Exception as e:
+        return Response({
+            'Aproved':False,
+            'message': f'An unexpected error occurred,{e}'
+        }, status=500)
 
     
 
