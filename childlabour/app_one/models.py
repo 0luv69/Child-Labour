@@ -1,9 +1,9 @@
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-import uuid
-from ..childlabour import settings
+from django.conf import settings
 from django.core.mail import send_mail
+import random
 
 # Create your models here.
 
@@ -13,6 +13,7 @@ class Complaint (models.Model):
     image = models.CharField( max_length=100)
     location = models.CharField( max_length=100)
     email = models.EmailField( max_length=250)
+    description = models.TextField()
     Type_list = (
         ('sexual-abuse', 'Sexual Abuse'),
         ('forced-labor', 'Forced Labor'),
@@ -39,16 +40,16 @@ class Complaint (models.Model):
 
     
 
-@receiver(post_save, sender= Complaint)
-def send_email_token(sender, instance, created, **kwargs):
-    try:
-        if created:
-            email_token = str(uuid.uuid4())
-            email = instance.email 
-            Complaint.objects.filter(id=instance.id).update(email_token=email_token)
-            send_account_activation_email(email, email_token, instance)
-    except Exception as E:
-        print(E)
+# @receiver(post_save, sender= Complaint)
+# def send_email_token(sender, instance, created, **kwargs):
+#     try:
+#         if created:
+#             email_token = str(random.randint(1000, 9999))
+#             email = instance.email 
+#             Complaint.objects.filter(id=instance.id).update(email_token=email_token)
+#             send_account_activation_email(email, email_token, instance)
+#     except Exception as E:
+#         print(E)
 
 def send_account_activation_email(email, email_token, complaint_instance):
     subject= 'lets verify so click the link plz'
